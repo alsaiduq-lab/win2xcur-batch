@@ -86,5 +86,20 @@ func main() {
 		fmt.Println("Successfully converted", fileName, "to", outputPath)
 	}
 
+	for _, pair := range mapped.Pairs {
+		xcurFile := pair.Windows + ".xcur"
+		xcurPath := filepath.Join(fullPathToConvertedDir, xcurFile)
+		data, err := os.ReadFile(xcurPath)
+		if err != nil {
+			fmt.Println("Skipping", xcurFile, "(not found)")
+			continue
+		}
+		for _, alias := range pair.Linux {
+			linkPath := filepath.Join(fullPathToConvertedDir, alias)
+			if err := os.WriteFile(linkPath, data, 0644); err != nil {
+				fmt.Println("Error copying", xcurFile, "->", alias, ":", err)
+			}
+		}
+	}
 	fmt.Println("Done!")
 }
